@@ -1458,10 +1458,7 @@ footer .en{font-family:var(--en);font-style:italic;font-size:1rem;margin-bottom:
 
 </section>
 
-</div><!-- /page-home -->
 
-<!-- ===== 預約分頁 ===== -->
-<div class="page" id="page-booking">
 
 <!-- ===== 線上預約 ===== -->
 <section id="booking" class="reveal">
@@ -1542,10 +1539,7 @@ footer .en{font-family:var(--en);font-style:italic;font-size:1rem;margin-bottom:
   </div>
 </section>
 
-</div><!-- /page-booking -->
 
-<!-- ===== 產品分頁 ===== -->
-<div class="page" id="page-products">
 
 <!-- ===== 產品專區 ===== -->
 <section id="products" class="reveal">
@@ -1559,7 +1553,7 @@ footer .en{font-family:var(--en);font-style:italic;font-size:1rem;margin-bottom:
   <p class="prod-note">✦ 商品可到店自取或私訊 LINE 安排宅配 ✦</p>
 </section>
 
-</div><!-- /page-products -->
+</div><!-- /page-home -->
 
 <!-- ===== 頁尾 ===== -->
 <footer>
@@ -2012,20 +2006,13 @@ filterBar.addEventListener('click',e=>{
 
 /* ===== 全域平滑捲動（供 button onclick 呼叫） ===== */
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
+  /* 已合併為單頁，保留相容性 */
 }
 function navTo(selector){
-  const el=typeof selector==='string'?document.querySelector(selector):null;
-  if(el){
-    const page=el.closest('.page');
-    if(page&&!page.classList.contains('active')){
-      showPage(page.id);
-      window.scrollTo({top:0});
-    }
-    el.scrollIntoView({behavior:'smooth'});
-    el.classList.add('in');
-  }
   closeMenu();
+  if(!selector)return window.scrollTo({top:0,behavior:'smooth'});
+  const el=document.querySelector(selector);
+  if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),60);
 }
 function goHome(){
   showPage('page-home');
