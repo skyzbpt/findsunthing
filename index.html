@@ -2352,6 +2352,68 @@ function renderProducts(){
 function serviceDefaults(){
   try{return JSON.parse(document.getElementById('serviceData').textContent)}catch(e){return[]}
 }
+
+/* ============================================================
+   Supabase 整合層
+   ============================================================ */
+const SB_URL='https://pwqzrcvplzbexrtyrshp.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3cXpyY3ZwbHpiZXhydHlyc2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MTY1MTgsImV4cCI6MjA5NzE5MjUxOH0.oIcei0sSd2WJCm_GaUMqh750MZ_m_dyQ_vxUiKMBFog';
+const sbH={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+async function sbFetch(path,opts={}){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/'+path,{...opts,headers:{...sbH,...(opts.headers||{})}});
+    if(r.status===204||r.status===201)return null;
+    return r.json();
+  }catch(e){console.warn('Supabase:',e);return null;}
+}
+async function sbLoadSettings(){
+  const rows=await sbFetch('fs_settings?select=key,value');
+  if(!rows||!rows.length)return;
+  rows.forEach(r=>{
+    try{
+      if(r.key==='fs_services')store.set('fs_services',r.value);
+      else if(r.key==='fs_works_v2')store.set('fs_works_v2',r.value);
+      else if(r.key==='fs_products')store.set('fs_products',r.value);
+      else if(r.key==='fs_bookingCfg')store.set('fs_bookingCfg',r.value);
+    }catch(e){}
+  });
+}
+async function sbSaveSetting(key,value){
+  await sbFetch('fs_settings',{method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({key,value})});
+}
+async function sbLoadUser(phone){
+  const rows=await sbFetch('fs_users?phone=eq.'+encodeURIComponent(phone)+'&limit=1');
+  return(rows&&rows[0])||null;
+}
+async function sbSaveUser(phone,data){
+  await sbFetch('fs_users',{method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({phone,...data})});
+}
+async function sbInsertOrder(phone,order){
+  await sbFetch('fs_orders',{method:'POST',
+    headers:{'Prefer':'return=minimal'},
+    body:JSON.stringify({phone,items:order.items||null,coupon:order.coupon||null,
+      total:order.total||0,note:order.note||'',time_pref:order.time||'',
+      created_at:new Date().toISOString()})});
+}
+async function sbInsertBooking(phone,bk){
+  await sbFetch('fs_bookings',{method:'POST',
+    headers:{'Prefer':'return=minimal'},
+    body:JSON.stringify({phone,service:bk.service||'',date:bk.date||'',
+      slot:bk.slot||'',note:bk.note||'',created_at:new Date().toISOString()})});
+}
+/* 頁面載入：從 Supabase 同步最新設定 */
+(async()=>{
+  await sbLoadSettings();
+  try{services=store.get('fs_services')||serviceDefaults();renderServices();}catch(e){}
+  try{products=store.get('fs_products')||productDefaults();renderProducts();}catch(e){}
+  try{const cfg=store.get('fs_bookingCfg');if(cfg)Object.assign(bookingCfg,cfg);bkRefresh();}catch(e){}
+})();
+
 let services=store.get('fs_services')||serviceDefaults();
 function svcNames(){return services.map(s=>s.name)}
 
@@ -2520,6 +2582,7 @@ function issueCoupon(acc,amount,source){
     status:'unused'
   });
   saveUsers(users);
+  sbSaveUser(acc,users[acc]);/* 同步 Supabase */
 }
 function unusedCoupons(acc){
   const u=getUsers()[acc];
@@ -2577,10 +2640,15 @@ document.getElementById('authSubmit').addEventListener('click',async()=>{
     saveUsers(users);
     store.set('fs_session',acc);
     issueCoupon(acc,100,'入會禮');
+    sbSaveUser(acc,getUsers()[acc]);/* 同步到 Supabase */
     toast('註冊成功，已送妳 $100 折價券 ✦');
     renderMemberArea();
   }else{
-    const u=users[acc];
+    let u=users[acc];
+    if(!u){/* 嘗試從 Supabase 讀取 */
+      const sb=await sbLoadUser(acc);
+      if(sb){users[acc]=sb;saveUsers(users);u=sb;}
+    }
     if(!u||u.passHash!==await hashStr(pass)){err.textContent='帳號或密碼不正確';return}
     store.set('fs_session',acc);
     toast('歡迎回來，'+u.name+' ✦');
@@ -2690,6 +2758,7 @@ document.getElementById('saveProfile').addEventListener('click',()=>{
     birthday:document.getElementById('mBirthday').value
   };
   saveUsers(users);
+  sbSaveUser(newAcc,users[newAcc]);/* 同步 Supabase */
   toast(newAcc!==oldAcc?'資料已儲存，帳號已更新 ✓':'資料已儲存 ✓');
   renderMemberArea();
 });
@@ -2707,6 +2776,7 @@ document.getElementById('changePass').addEventListener('click',async()=>{
   if(users[acc].passHash!==await hashStr(pwOld)){toast('目前密碼不正確');return}
   users[acc].passHash=await hashStr(pwNew);
   saveUsers(users);
+  sbSaveUser(acc,users[acc]);/* 同步 Supabase */
   ['pwOld','pwNew','pwNew2'].forEach(id=>document.getElementById(id).value='');
   toast('密碼已更新 ✓');
 });
@@ -2833,6 +2903,7 @@ document.getElementById('submitOrder').addEventListener('click',()=>{
     const orders=store.get(ordersKey(acc))||[];
     orders.unshift(order);
     store.set(ordersKey(acc),orders);
+    sbInsertOrder(acc,order);
     const reward=rewardCouponFor(paid);
     if(reward)issueCoupon(acc,reward,'滿額回饋');
   }
@@ -3034,6 +3105,7 @@ document.getElementById('bkSubmit').addEventListener('click',()=>{
       items:[],total:0
     });
     store.set(ordersKey(acc),recs);
+    sbInsertBooking(acc,{service:o.service,date:bk.date,slot:bk.slot,note:o.note});
   }
   lastBkText=buildBkText(o);
   copyText(lastBkText).then(()=>toast('預約內容已複製 ✓'));
@@ -3217,6 +3289,7 @@ const svcVal=(i,f)=>(svcPending[i]&&svcPending[i][f]!==undefined)?svcPending[i][
 function commitServices(){
   services=svcDraft.map(s=>({...s}));
   store.set('fs_services',services);
+  sbSaveSetting('fs_services',services);
   renderServices();
   try{bkRefresh();renderPosItems()}catch(e){}
 }
@@ -3293,6 +3366,7 @@ const wkVal=(i,f)=>(wkPending[i]&&wkPending[i][f]!==undefined)?wkPending[i][f]:w
 function commitWorks(){
   works=wkDraft.map(w=>({...w}));
   store.set('fs_works_v2',works);
+  sbSaveSetting('fs_works_v2',works);
   renderWorks();
 }
 function renderWkAdmin(){
@@ -3932,6 +4006,7 @@ document.getElementById('adminSave').addEventListener('click',()=>{
   store.set('fs_products',products);
   bookingCfg=JSON.parse(JSON.stringify(adminBk));
   store.set('fs_booking',bookingCfg);
+  sbSaveSetting('fs_bookingCfg',bookingCfg);
   if(svcDraft)commitServices();
   if(wkDraft)commitWorks();
   renderProducts();
@@ -3948,6 +4023,7 @@ document.getElementById('adminExport').addEventListener('click',async()=>{
   store.set('fs_products',products);
   bookingCfg=JSON.parse(JSON.stringify(adminBk));
   store.set('fs_booking',bookingCfg);
+  sbSaveSetting('fs_bookingCfg',bookingCfg);
   if(svcDraft)commitServices();
   if(wkDraft)commitWorks();
   renderProducts();
