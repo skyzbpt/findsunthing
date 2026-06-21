@@ -1,39 +1,47 @@
-User-agent: *
-Allow: /
- 
-# Google
-User-agent: Googlebot
-Allow: /
- 
-# AI 搜尋引擎
-User-agent: GPTBot
-Allow: /
- 
-User-agent: ChatGPT-User
-Allow: /
- 
-User-agent: PerplexityBot
-Allow: /
- 
-User-agent: Claude-Web
-Allow: /
- 
-User-agent: ClaudeBot
-Allow: /
- 
-User-agent: anthropic-ai
-Allow: /
- 
-User-agent: Gemini-Bot
-Allow: /
- 
-User-agent: GoogleOther
-Allow: /
- 
-User-agent: cohere-ai
-Allow: /
- 
-User-agent: YouBot
-Allow: /
- 
-Sitemap: https://skyzbpt.github.io/findsunthing/sitemap.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- 主頁 -->
+  <url>
+    <loc>https://skyzbpt.github.io/findsunthing/</loc>
+    <lastmod>2025-06-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="zh-TW"
+                href="https://skyzbpt.github.io/findsunthing/"/>
+  </url>
+
+  <!-- 作品集（SPA 錨點） -->
+  <url>
+    <loc>https://skyzbpt.github.io/findsunthing/#works</loc>
+    <lastmod>2025-06-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 服務項目 -->
+  <url>
+    <loc>https://skyzbpt.github.io/findsunthing/#services</loc>
+    <lastmod>2025-06-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 線上預約 -->
+  <url>
+    <loc>https://skyzbpt.github.io/findsunthing/#booking</loc>
+    <lastmod>2025-06-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 關於 -->
+  <url>
+    <loc>https://skyzbpt.github.io/findsunthing/#about</loc>
+    <lastmod>2025-06-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>
