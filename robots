@@ -1,39 +1,11 @@
+# robots.txt — 甲妝找飾晴 Find Sunthing
+# https://skyzbpt.github.io/findsunthing/
+
 User-agent: *
 Allow: /
- 
-# Google
-User-agent: Googlebot
-Allow: /
- 
-# AI 搜尋引擎
-User-agent: GPTBot
-Allow: /
- 
-User-agent: ChatGPT-User
-Allow: /
- 
-User-agent: PerplexityBot
-Allow: /
- 
-User-agent: Claude-Web
-Allow: /
- 
-User-agent: ClaudeBot
-Allow: /
- 
-User-agent: anthropic-ai
-Allow: /
- 
-User-agent: Gemini-Bot
-Allow: /
- 
-User-agent: GoogleOther
-Allow: /
- 
-User-agent: cohere-ai
-Allow: /
- 
-User-agent: YouBot
-Allow: /
- 
+
+# 讓 Google 知道 Sitemap 位置（最關鍵一行）
 Sitemap: https://skyzbpt.github.io/findsunthing/sitemap.xml
+
+# 若有後台或不想被收錄的路徑，加在這裡
+# Disallow: /admin
