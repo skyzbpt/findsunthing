@@ -148,8 +148,6 @@ header{
 .brand{display:flex;align-items:center;background:none;border:none;cursor:pointer;padding:0}
 .brand-logo{height:29px;width:auto;display:block}
 @media(max-width:760px){.brand-logo{height:25px}}
-.brand .zh{font-family:var(--serif);font-weight:600;font-size:1.1rem;letter-spacing:.18em}
-.brand .en{font-family:var(--en);font-style:italic;font-size:.95rem;color:var(--ink-soft)}
 /* 漢堡下拉選單：所有裝置共用 */
 .menu-btn{
   display:flex;align-items:center;justify-content:center;
@@ -350,22 +348,6 @@ body[data-dir="up"] .reveal:not(.in){transform:translateY(-16px)}
 @keyframes veinDrift{
   from{transform:translate(0,0) rotate(-14deg)}
   to{transform:translate(3vw,-4vh) rotate(-10deg)}
-}
-
-/* 碎鑽星光（JS 產生，兩種形態：星芒與光點） */
-.bg-sparkles span{
-  position:absolute;color:#fff;line-height:1;
-  text-shadow:0 0 6px rgba(255,255,255,.95),0 0 16px rgba(255,196,222,.85),0 0 28px rgba(255,170,205,.5);
-  animation:bgTwinkle var(--tw,4s) ease-in-out infinite;
-}
-.bg-sparkles span.dot{
-  width:5px;height:5px;border-radius:50%;
-  background:radial-gradient(circle,#FFFFFF 0%,rgba(255,214,232,.9) 45%,transparent 75%);
-  box-shadow:0 0 8px rgba(255,255,255,.9),0 0 18px rgba(255,186,215,.7);
-}
-@keyframes bgTwinkle{
-  0%,100%{opacity:.15;transform:scale(.6)}
-  50%{opacity:1;transform:scale(1.15)}
 }
 
 /* 緞帶蝴蝶結（四角，柔光緞面） */
@@ -614,28 +596,6 @@ header.scrolled{box-shadow:0 6px 24px rgba(43,35,51,.08)}
 .reveal{transform:translateY(16px)}
 
 /* ============================================================
-   品牌插圖動態特效
-   ============================================================ */
-.fx-tw{animation:fxTwinkle 3.2s ease-in-out infinite}
-@keyframes fxTwinkle{0%,100%{opacity:.15}50%{opacity:1}}
-.fx-pulse{transform-box:fill-box;transform-origin:center;animation:fxPulse 4s ease-in-out infinite}
-@keyframes fxPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.12);opacity:1}}
-.fx-neb{animation:fxDrift 14s ease-in-out infinite alternate}
-.fx-neb2{animation-delay:-7s}
-@keyframes fxDrift{from{transform:translate(0,0)}to{transform:translate(10px,-8px)}}
-.fx-orbit{transform-origin:150px 148px;animation:fxOrbit 9s linear infinite}
-@keyframes fxOrbit{to{transform:rotate(360deg)}}
-.fx-grid line{stroke:#B07BE8}
-.fx-grid{animation:fxGrid 2.4s linear infinite}
-@keyframes fxGrid{to{transform:translateY(24px)}}
-.fx-holo{animation:fxHue 8s linear infinite}
-@keyframes fxHue{to{filter:hue-rotate(360deg)}}
-.fx-sweep{animation:fxSweep 3.6s ease-in-out infinite}
-@keyframes fxSweep{0%{transform:skewX(-18deg) translateX(0)}60%,100%{transform:skewX(-18deg) translateX(300px)}}
-.fx-rise{animation:fxRise 4.8s ease-out infinite}
-@keyframes fxRise{0%{transform:translateY(0);opacity:0}15%{opacity:1}80%{opacity:0}100%{transform:translateY(-60px);opacity:0}}
-
-/* ============================================================
    作品集（指甲杏仁形卡片 + 分類篩選 + 燈箱）
    ============================================================ */
 .filter-bar{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:48px}
@@ -737,26 +697,6 @@ header.scrolled{box-shadow:0 6px 24px rgba(43,35,51,.08)}
   margin-top:18px;font-family:var(--en);font-size:1.15rem;font-style:italic;
   color:var(--lilac-deep);
 }
-.reviews-wrap{max-width:1100px;margin:0 auto;padding:40px 24px 0}
-.rv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px}
-.rv-card{
-  background:rgba(255,255,255,.7);border:1px solid var(--line);
-  border-radius:22px;padding:24px;backdrop-filter:blur(6px);
-  transition:all .35s;
-}
-.rv-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(185,164,227,.22);border-color:transparent}
-.rv-stars{color:#FBBC05;font-size:1.05rem;letter-spacing:2px;margin-bottom:10px}
-.rv-text{font-size:.9rem;color:var(--ink-soft);line-height:1.85;letter-spacing:.06em;margin-bottom:14px}
-.rv-meta{display:flex;align-items:center;gap:10px}
-.rv-avatar{
-  width:36px;height:36px;border-radius:50%;
-  background:linear-gradient(135deg,var(--blush-deep),var(--lilac-deep));
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:.9rem;font-family:var(--serif);font-weight:600;flex:none;
-}
-.rv-name{font-size:.85rem;font-weight:500;letter-spacing:.1em}
-.rv-date{font-size:.75rem;color:var(--ink-soft);letter-spacing:.08em}
-
 /* 優惠橫幅 */
 .promo-banner{
   max-width:860px;margin:56px auto 0;padding:30px 36px;
@@ -771,11 +711,6 @@ header.scrolled{box-shadow:0 6px 24px rgba(43,35,51,.08)}
 }
 .promo-banner::after{
   content:'✧';position:absolute;bottom:14px;right:22px;color:var(--lilac-deep);opacity:.6;
-}
-.promo-banner .pb-tag{
-  display:inline-block;padding:5px 16px;border-radius:999px;margin-bottom:12px;
-  background:linear-gradient(120deg,var(--blush-deep),var(--lilac-deep));
-  color:#fff;font-size:.74rem;letter-spacing:.24em;
 }
 .promo-banner h3{
   font-family:var(--serif);font-weight:600;font-size:1.45rem;
@@ -1254,7 +1189,6 @@ footer .en{font-family:var(--en);font-style:italic;font-size:1rem;margin-bottom:
   </svg>
   <div class="bg-dream" aria-hidden="true">
     <div class="bg-veins"><span class="v1"></span><span class="v2"></span></div>
-    <div class="bg-sparkles" id="bgSparkles"></div>
     <div class="bg-bows"><svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" class="bw-tl" aria-hidden="true">
       <defs>
         <linearGradient id="bowG1" x1="0" y1="0" x2="1" y2="1">
@@ -2424,7 +2358,6 @@ async function sbInsertBooking(phone,bk){
 })();
 
 let services=store.get('fs_services')||serviceDefaults();
-function svcNames(){return services.map(s=>s.name)}
 
 /* 服務項目手繪線條 icon（stroke 共用 #svcGrad 漸層） */
 const SVC_ICONS={
